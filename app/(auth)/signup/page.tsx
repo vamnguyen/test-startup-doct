@@ -2,20 +2,33 @@
 import { countries } from "@/constants";
 import { Button, Checkbox, Form, Input, Select } from "antd";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import { InputStateForm } from "@/interfaces";
 import Link from "next/link";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const SignUpPage = () => {
   const [userRole, setUserRole] = React.useState("Doctor");
   const [inputState, setInputState] = React.useState<InputStateForm>({
-    firstName: { isError: false, errorMessage: "", value: "" },
-    lastName: { isError: false, errorMessage: "", value: "" },
-    email: { isError: false, errorMessage: "", value: "" },
-    password: { isError: false, errorMessage: "", value: "" },
-    confirmPassword: { isError: false, errorMessage: "", value: "" },
-    phoneNumber: { isError: false, errorMessage: "", value: "" },
-    address: { isError: false, errorMessage: "", value: "" },
+    firstName: {
+      isError: false,
+      errorMessage: "Invalid First Name",
+      value: "",
+    },
+    lastName: { isError: false, errorMessage: "Invalid Last Name", value: "" },
+    email: { isError: false, errorMessage: "Invalid Email", value: "" },
+    password: { isError: false, errorMessage: "Invalid Password", value: "" },
+    confirmPassword: {
+      isError: false,
+      errorMessage: "Invalid Confirm Password",
+      value: "",
+    },
+    phoneNumber: {
+      isError: false,
+      errorMessage: "Invalid Phone Number",
+      value: "",
+    },
+    address: { isError: false, errorMessage: "Invalid Address", value: "" },
   });
 
   const handleInputChange = (field: keyof InputStateForm, value: any) => {
@@ -24,6 +37,8 @@ const SignUpPage = () => {
       [field]: { ...prevState[field], value: value },
     }));
   };
+
+  const debounceChanged = useDebounce(handleInputChange, 500);
 
   return (
     <div className="flex shrink-0 items-center justify-center h-screen">
@@ -59,14 +74,14 @@ const SignUpPage = () => {
             size="large"
             placeholder="First Name"
             className="h-12"
-            onChange={(e) => handleInputChange("firstName", e.target.value)}
+            onChange={(e) => debounceChanged("firstName", e.target.value)}
           />
           <Input
             required
             size="large"
             placeholder="Last Name"
             className="h-12"
-            onChange={(e) => handleInputChange("lastName", e.target.value)}
+            onChange={(e) => debounceChanged("lastName", e.target.value)}
           />
         </div>
         <Input
@@ -75,7 +90,7 @@ const SignUpPage = () => {
           type="email"
           placeholder="doct@gmail.com"
           className="h-12"
-          onChange={(e) => handleInputChange("email", e.target.value)}
+          onChange={(e) => debounceChanged("email", e.target.value)}
         />
         <Input
           required
@@ -83,7 +98,7 @@ const SignUpPage = () => {
           type="password"
           placeholder="Create Password"
           className="h-12"
-          onChange={(e) => handleInputChange("password", e.target.value)}
+          onChange={(e) => debounceChanged("password", e.target.value)}
         />
         <Input
           required
@@ -91,7 +106,7 @@ const SignUpPage = () => {
           type="password"
           placeholder="Confirm Password"
           className="h-12"
-          onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+          onChange={(e) => debounceChanged("confirmPassword", e.target.value)}
         />
         <div className="flex gap-5 w-full">
           <Select placeholder="+84" className="w-[260px] h-11">
@@ -105,7 +120,7 @@ const SignUpPage = () => {
             required
             placeholder="Phone Number"
             className="h-11"
-            onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+            onChange={(e) => debounceChanged("phoneNumber", e.target.value)}
           />
         </div>
         <Input
@@ -113,7 +128,7 @@ const SignUpPage = () => {
           size="large"
           placeholder="Enter your address"
           className="h-12"
-          onChange={(e) => handleInputChange("address", e.target.value)}
+          onChange={(e) => debounceChanged("address", e.target.value)}
         />
         <div className="flex gap-3">
           <Checkbox>

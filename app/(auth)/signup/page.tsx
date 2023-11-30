@@ -1,49 +1,83 @@
 "use client";
 import { countries } from "@/constants";
-import { Button, Checkbox, Form, Input, Select } from "antd";
+import { Button, Checkbox, Input, Select } from "antd";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { InputStateForm } from "@/interfaces";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useRouter } from "next/navigation";
 
 const SignUpPage = () => {
-  const [userRole, setUserRole] = React.useState("Doctor");
+  const router = useRouter();
+  const [userRole, setUserRole] = React.useState("Patient");
   const [inputState, setInputState] = React.useState<InputStateForm>({
-    firstName: {
-      isError: false,
-      errorMessage: "Invalid First Name",
-      value: "",
-    },
-    lastName: { isError: false, errorMessage: "Invalid Last Name", value: "" },
-    email: { isError: false, errorMessage: "Invalid Email", value: "" },
-    password: { isError: false, errorMessage: "Invalid Password", value: "" },
-    confirmPassword: {
-      isError: false,
-      errorMessage: "Invalid Confirm Password",
-      value: "",
-    },
-    phoneNumber: {
-      isError: false,
-      errorMessage: "Invalid Phone Number",
-      value: "",
-    },
-    address: { isError: false, errorMessage: "Invalid Address", value: "" },
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phoneNumber: "",
+    address: "",
   });
+  const [error, setError] = useState("");
 
   const handleInputChange = (field: keyof InputStateForm, value: any) => {
     setInputState((prevState) => ({
       ...prevState,
-      [field]: { ...prevState[field], value: value },
+      [field]: value,
     }));
   };
 
   const debounceChanged = useDebounce(handleInputChange, 500);
 
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      // Check User Existing
+      const resUserExist = await fetch("api/userExist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(inputState.email),
+      });
+      console.log(
+        "🚀 ~ file: page.tsx:44 ~ handleSubmit ~ resUserExist:",
+        resUserExist
+      );
+
+      const { userId } = await resUserExist.json();
+      if (userId) {
+        setError("User email already existed.");
+        return;
+      }
+
+      // New User
+      const res = await fetch("api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userRole, inputState }),
+      });
+
+      if (res.ok) {
+        const form = e.target;
+        form.reset();
+        router.push("/");
+      } else {
+        console.log("User registration failed.");
+      }
+    } catch (error) {
+      console.log("Error during registration: ", error);
+    }
+  };
+
   return (
     <div className="flex shrink-0 items-center justify-center h-screen">
       {/* FORM CONTAINER */}
-      <Form className="inline-flex flex-col justify-center items-start gap-5 flex-1 h-auto px-32 pt-32">
+      <form
+        className="inline-flex flex-col justify-center items-start gap-5 flex-1 h-auto px-32 pt-32"
+        onSubmit={handleSubmit}
+      >
         <h1 className="text-[#323A46] font-bold text-2xl">Sign Up</h1>
         <p className="text-[#767C84] font-normal text-base">
           Enter details to create your account
@@ -138,19 +172,24 @@ const SignUpPage = () => {
             </p>
           </Checkbox>
         </div>
-        <Button
-          htmlType="submit"
+        {error && (
+          <div className="bg-red-500 text-white w-fit text-sm py-1 px-3 rounded-md">
+            {error}
+          </div>
+        )}
+        <button
+          type="submit"
           className="-bg--primary text-white font-semibold text-base rounded px-6 py-3 w-full h-12"
         >
           Sign Up
-        </Button>
+        </button>
         <p className="text-[#767C84] font-normal text-base">
           You have account already?{" "}
           <Link href={"/login"} className="-text--primary">
             Sign In
           </Link>
         </p>
-      </Form>
+      </form>
 
       {/* IMAGE CONTAINER */}
       <div className="">

@@ -1,7 +1,12 @@
-import React from "react";
+"use client";
+import Navigation from "@/components/Navigation";
 
 const DashBoardPage = () => {
-  return <div>DashBoardPage</div>;
+  return (
+    <div>
+      <Navigation />
+    </div>
+  );
 };
 
 export default DashBoardPage;

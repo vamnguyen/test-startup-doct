@@ -1,31 +1,59 @@
 "use client";
-import { Button, Checkbox, Form, Input } from "antd";
-import React from "react";
+import { Button, Checkbox, Input } from "antd";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { InputStateForm } from "@/interfaces";
 import { useDebounce } from "@/hooks/useDebounce";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
+  const router = useRouter();
   const [userRole, setUserRole] = React.useState("Doctor");
   const [inputState, setInputState] = React.useState<InputStateForm>({
-    email: { isError: false, errorMessage: "Invalid Email", value: "" },
-    password: { isError: false, errorMessage: "Invalid Password", value: "" },
+    email: "",
+    password: "",
   });
+  const [error, setError] = useState("second");
 
   const handleInputChange = (field: keyof InputStateForm, value: any) => {
     setInputState((prevState) => ({
       ...prevState,
-      [field]: { ...prevState[field], value: value },
+      [field]: value,
     }));
   };
 
   const debounceChanged = useDebounce(handleInputChange, 500);
 
+  const handleFormSubmit = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      const res = await signIn("credentials", {
+        email: inputState.email,
+        password: inputState.password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        setError("Invalid Credentials");
+        return;
+      }
+
+      router.replace("dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="flex shrink-0 items-center justify-center h-screen">
       {/* FORM CONTAINER */}
-      <Form className="inline-flex flex-col justify-center items-start gap-5 flex-1 h-auto px-32 pt-32">
+      <form
+        onSubmit={handleFormSubmit}
+        className="inline-flex flex-col justify-center items-start gap-5 flex-1 h-auto px-32 pt-32"
+      >
         <h1 className="text-[#323A46] font-bold text-2xl">
           Welcome to Doctsyl
         </h1>
@@ -58,6 +86,37 @@ const LoginPage = () => {
             Patient
           </Button>
         </div>
+
+        <div className="flex justify-between gap-7 w-full">
+          <button
+            className="flex gap-4 p-4 ring-1 ring-orange-100 rounded-md w-1/2"
+            // onClick={() => signIn("google")}
+          >
+            <Image
+              src="/google.png"
+              alt=""
+              width={20}
+              height={20}
+              className="object-contain"
+            />
+            <span>Sign in with Google</span>
+          </button>
+          <button
+            className="flex gap-4 p-4 ring-1 ring-blue-100 rounded-md w-1/2"
+            // onClick={() => signIn("facebook")}
+          >
+            <Image
+              src="/facebook.png"
+              alt=""
+              width={20}
+              height={20}
+              className="object-contain"
+            />
+            <span>Sign in with Facebook</span>
+          </button>
+        </div>
+
+        <span className="px-3 text-gray-500">Or with email and password</span>
         <Input
           required
           size="large"
@@ -74,12 +133,12 @@ const LoginPage = () => {
           className="h-12"
           onChange={(e) => debounceChanged("password", e.target.value)}
         />
-        <Button
-          htmlType="submit"
+        <button
+          type="submit"
           className="-bg--primary text-white font-semibold text-base rounded px-6 py-3 w-full h-12"
         >
           Login
-        </Button>
+        </button>
         <div className="flex justify-between items-center w-full">
           <div className="flex gap-3">
             <Checkbox>
@@ -93,7 +152,7 @@ const LoginPage = () => {
             Forgot Password?
           </Link>
         </div>
-      </Form>
+      </form>
 
       {/* IMAGE CONTAINER */}
       <div className="">

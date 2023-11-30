@@ -1,16 +1,15 @@
-"use client";
+import { authOptions } from "@/utils/auth";
+import { getServerSession } from "next-auth/next";
+import { redirect } from "next/navigation";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+const HomePage = async () => {
+  const session = await getServerSession(authOptions);
 
-const HomePage = () => {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace("/dashboard");
-  }, []);
-
-  return <p>Redirecting...</p>;
+  if (session) {
+    redirect("/dashboard");
+  } else {
+    redirect("/login");
+  }
 };
 
 export default HomePage;

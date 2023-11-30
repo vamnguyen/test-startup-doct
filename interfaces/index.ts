@@ -10,5 +10,5 @@ export interface InputStateForm {
 
 export interface UserCredentials {
   email: string;
-  password: string;
+  password?: any;
 }

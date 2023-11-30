@@ -6,16 +6,24 @@ import Image from "next/image";
 import { InputStateForm } from "@/interfaces";
 import { useDebounce } from "@/hooks/useDebounce";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/utils/auth";
 
 const LoginPage = () => {
+  // const checkSession = async () => {
+  //   const session = await getServerSession(authOptions);
+  //   if (session) return redirect("/dashboard");
+  // };
+  // checkSession();
+
   const router = useRouter();
   const [userRole, setUserRole] = React.useState("Doctor");
   const [inputState, setInputState] = React.useState<InputStateForm>({
     email: "",
     password: "",
   });
-  const [error, setError] = useState("second");
+  const [error, setError] = useState("");
 
   const handleInputChange = (field: keyof InputStateForm, value: any) => {
     setInputState((prevState) => ({
@@ -37,7 +45,7 @@ const LoginPage = () => {
       });
 
       if (res?.error) {
-        setError("Invalid Credentials");
+        setError("Invalid Credentials or User not found.");
         return;
       }
 
@@ -103,16 +111,16 @@ const LoginPage = () => {
           </button>
           <button
             className="flex gap-4 p-4 ring-1 ring-blue-100 rounded-md w-1/2"
-            // onClick={() => signIn("facebook")}
+            // onClick={() => signIn("github")}
           >
             <Image
-              src="/facebook.png"
+              src="/github.png"
               alt=""
               width={20}
               height={20}
               className="object-contain"
             />
-            <span>Sign in with Facebook</span>
+            <span>Sign in with Github</span>
           </button>
         </div>
 
@@ -133,6 +141,11 @@ const LoginPage = () => {
           className="h-12"
           onChange={(e) => debounceChanged("password", e.target.value)}
         />
+        {error && (
+          <div className="bg-red-500 text-white w-fit text-sm py-1 px-3 rounded-md">
+            {error}
+          </div>
+        )}
         <button
           type="submit"
           className="-bg--primary text-white font-semibold text-base rounded px-6 py-3 w-full h-12"

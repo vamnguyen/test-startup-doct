@@ -2,13 +2,21 @@
 import { countries } from "@/constants";
 import { Button, Checkbox, Input, Select } from "antd";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InputStateForm } from "@/interfaces";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/utils/auth";
 
 const SignUpPage = () => {
+  // const checkSession = async () => {
+  //   const session = await getServerSession(authOptions);
+  //   if (session) return redirect("/dashboard");
+  // };
+  // checkSession();
+
   const router = useRouter();
   const [userRole, setUserRole] = React.useState("Patient");
   const [inputState, setInputState] = React.useState<InputStateForm>({
@@ -41,10 +49,6 @@ const SignUpPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(inputState.email),
       });
-      console.log(
-        "🚀 ~ file: page.tsx:44 ~ handleSubmit ~ resUserExist:",
-        resUserExist
-      );
 
       const { userId } = await resUserExist.json();
       if (userId) {

@@ -4,7 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectMongoDB } from "@/utils/connectdb";
 import User from "@/models/User";
-import bcrypt from "bcrypt-ts";
+import { compareSync } from "bcrypt";
 import { UserCredentials } from "@/interfaces";
 
 export const authOptions: NextAuthOptions = {
@@ -25,11 +25,11 @@ export const authOptions: NextAuthOptions = {
 
         try {
           await connectMongoDB();
-          const user = User.findOne({ email });
+          const user = await User.findOne({ email });
 
           if (!user) return null;
 
-          const passwordMatch = await bcrypt.compare(password, user.password);
+          const passwordMatch = compareSync(password, user.password);
           if (!passwordMatch) return null;
 
           return user;
@@ -43,7 +43,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET!,
-  // pages: {
-  //   signIn: "/",
-  // },
+  pages: {
+    signIn: "/",
+  },
 };

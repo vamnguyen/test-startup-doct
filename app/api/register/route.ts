@@ -1,7 +1,7 @@
 import { connectMongoDB } from "@/utils/connectdb";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/User";
-import { hashSync, genSaltSync } from "bcrypt-ts";
+import { hashSync, genSaltSync } from "bcrypt";
 
 export const POST = async (req: NextRequest) => {
   try {

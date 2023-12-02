@@ -65,7 +65,7 @@ const SideBar = () => {
   if (pathname === "/signup" || pathname === "/login") return null;
 
   return (
-    <div className="inline-flex flex-col items-start gap-[45px] flex-shrink-0 py-[26px] px-[14px]">
+    <div className="fixed top-0 bottom-0 inline-flex flex-col items-start gap-[45px] flex-shrink-0 py-[26px] px-4">
       <Link
         href={"/dashboard"}
         className="flex items-center justify-center gap-[3.5px]"

@@ -5,7 +5,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { connectMongoDB } from "@/utils/connectdb";
 import User from "@/models/User";
 import { compareSync } from "bcrypt";
-import { UserCredentials } from "@/interfaces";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -20,7 +19,7 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {},
-      async authorize(credentials: UserCredentials) {
+      async authorize(credentials: any) {
         const { email, password } = credentials;
 
         try {

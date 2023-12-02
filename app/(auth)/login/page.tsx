@@ -1,21 +1,20 @@
 "use client";
 import { Button, Checkbox, Input } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { InputStateForm } from "@/interfaces";
 import { useDebounce } from "@/hooks/useDebounce";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/auth";
 
 const LoginPage = () => {
-  // const checkSession = async () => {
-  //   const session = await getServerSession(authOptions);
-  //   if (session) return redirect("/dashboard");
-  // };
-  // checkSession();
+  const { status } = useSession();
+  useEffect(() => {
+    if (status === "authenticated") {
+      redirect("/dashboard");
+    }
+  }, [status]);
 
   const router = useRouter();
   const [userRole, setUserRole] = React.useState("Doctor");

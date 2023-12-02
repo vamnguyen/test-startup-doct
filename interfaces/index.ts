@@ -7,8 +7,3 @@ export interface InputStateForm {
   phoneNumber?: string;
   address?: string;
 }
-
-export interface UserCredentials {
-  email: string;
-  password?: any;
-}

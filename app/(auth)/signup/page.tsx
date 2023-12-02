@@ -7,15 +7,15 @@ import { InputStateForm } from "@/interfaces";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/useDebounce";
 import { redirect, useRouter } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/auth";
+import { useSession } from "next-auth/react";
 
 const SignUpPage = () => {
-  // const checkSession = async () => {
-  //   const session = await getServerSession(authOptions);
-  //   if (session) return redirect("/dashboard");
-  // };
-  // checkSession();
+  const { status } = useSession();
+  useEffect(() => {
+    if (status === "authenticated") {
+      redirect("/dashboard");
+    }
+  }, [status]);
 
   const router = useRouter();
   const [userRole, setUserRole] = React.useState("Patient");
@@ -41,6 +41,24 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    if (
+      !inputState.firstName ||
+      !inputState.lastName ||
+      !inputState.email ||
+      !inputState.password ||
+      !inputState.confirmPassword ||
+      !inputState.phoneNumber ||
+      !inputState.address
+    ) {
+      setError("Please fill all the fields.");
+      return;
+    }
+
+    if (inputState.password !== inputState.confirmPassword) {
+      setError("Password and Confirm Password are not matched.");
+      return;
+    }
 
     try {
       // Check User Existing

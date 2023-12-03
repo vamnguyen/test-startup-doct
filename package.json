@@ -6,13 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "preview-email": "email dev"
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
+    "@react-email/button": "^0.0.13",
     "@react-email/container": "^0.0.11",
     "@react-email/html": "^0.0.7",
+    "@react-email/render": "^0.0.10",
     "@react-email/section": "^0.0.11",
     "@react-email/text": "^0.0.7",
     "antd": "^5.11.3",

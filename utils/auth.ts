@@ -6,6 +6,19 @@ import { connectMongoDB } from "@/utils/connectdb";
 import User from "@/models/User";
 import { compareSync } from "bcrypt";
 
+declare module "next-auth" {
+  interface Session {
+    user: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      image: string;
+      createdAt: string;
+      updatedAt: string;
+    };
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GithubProvider({
@@ -38,11 +51,21 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token }) {
+      // Fetch the user from the database using the email in the token
+      const userInDb = await User.findOne({ email: token.email }, "-password");
+      if (userInDb) {
+        session.user = userInDb;
+      }
+      return session;
+    },
+  },
   session: {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET!,
   pages: {
-    signIn: "/",
+    signIn: "/login",
   },
 };

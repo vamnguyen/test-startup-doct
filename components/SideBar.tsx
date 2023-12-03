@@ -3,6 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/public/Logo.svg";
+import { usePathname } from "next/navigation";
+import React from "react";
 import {
   AppointmentIcon,
   BlogIcon,
@@ -13,8 +15,6 @@ import {
   ScheduleTimeIcon,
   SettingIcon,
 } from "@/icons";
-import { usePathname } from "next/navigation";
-import React from "react";
 
 const routes = [
   {
@@ -62,7 +62,13 @@ const routes = [
 const SideBar = () => {
   const pathname = usePathname();
 
-  if (pathname === "/signup" || pathname === "/login") return null;
+  if (
+    pathname === "/signup" ||
+    pathname === "/login" ||
+    pathname === "/forgotPassword"
+  ) {
+    return null;
+  }
 
   return (
     <div className="fixed top-0 bottom-0 inline-flex flex-col items-start gap-[45px] flex-shrink-0 py-[26px] px-4">

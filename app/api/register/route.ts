@@ -5,10 +5,9 @@ import { hashSync, genSaltSync } from "bcrypt";
 
 export const POST = async (req: NextRequest) => {
   try {
-    const { userRole, inputState } = await req.json();
+    const { userRole, data } = await req.json();
     const role = userRole;
-    const { firstName, lastName, email, password, phoneNumber, address } =
-      inputState;
+    const { firstName, lastName, email, password, phoneNumber, address } = data;
 
     await connectMongoDB();
 

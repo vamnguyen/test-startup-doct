@@ -1,35 +1,28 @@
-import { Button } from "@react-email/button";
 import { Container } from "@react-email/container";
 import { Html } from "@react-email/html";
 import { Section } from "@react-email/section";
 import { Text } from "@react-email/text";
 
-const EmailForgotPassword = () => {
+const EmailWelcome = () => {
   return (
     <Html>
       <Section style={main}>
         <Container style={container}>
-          <Text style={heading}>Hi my friend, we come from the Doct app!</Text>
-          <Text style={paragraph}>
-            Do you want to reset your password? Let's click the Reset Password
-            button.
+          <Text style={heading}>
+            Hi my friend, we come from the Doct app! 🎉
           </Text>
           <Text style={paragraph}>
-            If you are not, please ignore this email.
+            Thank you believed and used our app 😍😍. We'll bring to experience
+            wonderful and Doctors professional in the world! Good have a nice
+            day ❤️
           </Text>
-          <Button
-            style={button}
-            href={`${process.env.NEXT_DOMAIN_APP_URL}/newPassword`}
-          >
-            Reset Password
-          </Button>
         </Container>
       </Section>
     </Html>
   );
 };
 
-export default EmailForgotPassword;
+export default EmailWelcome;
 
 // Styles for the email template
 const main = {
@@ -53,13 +46,4 @@ const paragraph = {
   fontSize: "18px",
   lineHeight: "1.4",
   color: "#484848",
-};
-
-const button = {
-  backgroundColor: "#796EFF",
-  color: "#FFF",
-  borderRadius: "4px",
-  padding: "12px 24px",
-  fontSize: "16px",
-  fontWeight: "600",
 };

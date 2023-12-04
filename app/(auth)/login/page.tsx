@@ -6,8 +6,9 @@ import Image from "next/image";
 import { InputStateForm } from "@/interfaces";
 import { useDebounceForm } from "@/hooks/useDebounce";
 import { signIn, useSession } from "next-auth/react";
-import { redirect, useRouter } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { ValidateEmail } from "@/lib";
 
 const LoginPage = () => {
   const { status } = useSession();
@@ -18,7 +19,10 @@ const LoginPage = () => {
   }, [status]);
 
   const router = useRouter();
-  const [userRole, setUserRole] = React.useState("Doctor");
+  const searchParams = useSearchParams();
+  const notify = searchParams.get("notify");
+
+  const [userRole, setUserRole] = React.useState("Patient");
   const [error, setError] = useState("");
 
   const {
@@ -35,6 +39,8 @@ const LoginPage = () => {
   const debounceChanged = useDebounceForm(handleInputChange, 500);
 
   const onSubmit = async (data: InputStateForm) => {
+    if (!ValidateEmail(data.email!)) return setError("Email invalid.");
+
     try {
       const res = await signIn("credentials", {
         email: data.email,
@@ -122,6 +128,9 @@ const LoginPage = () => {
         </div>
 
         <span className="px-3 text-gray-500">Or with email and password</span>
+        {notify && (
+          <p className="text-[#129A7F] font-medium text-base">{notify}</p>
+        )}
         <Input
           required
           size="large"

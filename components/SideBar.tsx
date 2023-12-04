@@ -65,7 +65,8 @@ const SideBar = () => {
   if (
     pathname === "/signup" ||
     pathname === "/login" ||
-    pathname === "/forgotPassword"
+    pathname === "/forgotPassword" ||
+    pathname === "/newPassword"
   ) {
     return null;
   }

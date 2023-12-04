@@ -1,8 +1,9 @@
 "use client";
 import { useDebounceForm } from "@/hooks/useDebounce";
 import { InputStateForm } from "@/interfaces";
+import { ValidateEmail } from "@/lib";
 import { Input } from "antd";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -14,6 +15,7 @@ const ForgotPassword = () => {
   } = useForm<InputStateForm>({});
 
   const [notification, setNotification] = useState("");
+  const router = useRouter();
 
   const handleInputChange = (field: keyof InputStateForm, value: any) => {
     setValue(field, value);
@@ -21,25 +23,29 @@ const ForgotPassword = () => {
   const debouncedChanged = useDebounceForm(handleInputChange, 500);
 
   const onSubmit = async (data: InputStateForm) => {
-    if (!data.email) return setNotification("Email is required");
+    if (!data.email || !data.password || !data.confirmPassword)
+      return setNotification("All field is required");
+
+    if (!ValidateEmail(data.email!)) return setNotification("Email invalid.");
+
+    if (data.password !== data.confirmPassword)
+      return setNotification("Password and Confirm Password don't match");
 
     try {
-      let type = "forgot_password";
-      const res = await fetch("/api/sendEmail", {
+      const res = await fetch("/api/changePassword", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ data, type }),
+        body: JSON.stringify(data),
       });
+      const response = await res.json();
 
-      if (res.status === 200 && res.ok) {
-        setNotification(
-          "Instruction to reset your password will be sent to you. Please check your email"
-        );
+      if (res.ok && res.status === 200) {
+        router.push("/login?notify=Password%20successfully%20updated");
       } else {
-        setNotification(await res.json());
+        setNotification(response);
       }
     } catch (error) {
       console.log(error);
@@ -52,22 +58,36 @@ const ForgotPassword = () => {
         className="bg-[#FFF] inline-flex flex-col items-center gap-5 justify-center py-16 px-16"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h1>Forgot Password</h1>
-        <p className="font-weight text-base text-[#767C84]">
-          {!notification ? (
-            "Enter your register email address."
-          ) : (
-            <p className="bg-[#fdf6e0] rounded flex items-center justify-center py-3 px-8 -text--secondary font-medium text-sm">
-              {notification}
-            </p>
-          )}
-        </p>
+        <h1>New Password</h1>
+        {!notification ? (
+          <p className="-text--primary-2 font-medium text-sm bg-[#E9F6FE] rounded py-3 px-6">
+            Please create a new password that you don’t use on any other site
+          </p>
+        ) : (
+          <p className="bg-[#fdf6e0] rounded py-3 px-8 -text--secondary font-medium text-sm">
+            {notification}
+          </p>
+        )}
         <Input
           type="email"
-          placeholder="hellouihut@gmail.com"
+          placeholder="Your email account registered with our app"
           size="large"
           className="h-12"
           onChange={(e) => debouncedChanged("email", e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="Enter your new password"
+          size="large"
+          className="h-12"
+          onChange={(e) => debouncedChanged("password", e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="Confirm your new password"
+          size="large"
+          className="h-12"
+          onChange={(e) => debouncedChanged("confirmPassword", e.target.value)}
         />
         <button
           type="submit"
@@ -93,12 +113,9 @@ const ForgotPassword = () => {
               </svg>
             </div>
           ) : (
-            "Submit"
+            "Change"
           )}
         </button>
-        <Link href={"/login"} className="-text--primary font-medium text-base">
-          Back to Sign In
-        </Link>
       </form>
     </div>
   );

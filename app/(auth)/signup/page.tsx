@@ -9,6 +9,7 @@ import { useDebounceForm } from "@/hooks/useDebounce";
 import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
+import { ValidateEmail } from "@/lib";
 
 const SignUpPage = () => {
   const { status } = useSession();
@@ -35,6 +36,10 @@ const SignUpPage = () => {
   const debounceChanged = useDebounceForm(handleInputChange, 500);
 
   const onSubmit = async (data: InputStateForm) => {
+    if (!ValidateEmail(data.email!)) return setError("Email invalid.");
+    if (data.password !== data.confirmPassword)
+      return setError("Password and Confirm Password don't match");
+
     try {
       // Check User Existing
       const resUserExist = await fetch("api/userExist", {
@@ -49,7 +54,21 @@ const SignUpPage = () => {
         return;
       }
 
-      // New User
+      // send email welcome
+      let type = "welcome";
+      const resEmail = await fetch("api/sendEmail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ data, type }),
+      });
+      if (!resEmail.ok) {
+        return setError(await resEmail.json());
+      }
+
+      // Create new User
       const res = await fetch("api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

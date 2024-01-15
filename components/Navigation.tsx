@@ -25,7 +25,7 @@ const Navigation = () => {
   const debouncedInputSearch = useDebounce(handleInputSearchChange, 500);
 
   return (
-    <div className="border-red-500 ml-[250px] px-7 bg-[#f5f5f5] flex justify-between items-center border-2 top-0 py-4">
+    <div className="ml-[250px] px-7 bg-[#f5f5f5] flex justify-between items-center top-0 py-4">
       {/* Left Nav Block (Search Box) */}
       <div className="flex items-center gap-2">
         {/* search icon */}
@@ -52,7 +52,7 @@ const Navigation = () => {
         <input
           type="text"
           placeholder="Search Appointment, Patient or etc"
-          className="outline-none bg-[#f6f6f6] rounded-md px-4 py-2 w-[320px]"
+          className="outline-none bg-[#F1F1F1] rounded-md px-4 py-2 w-[320px]"
           onChange={(e) => debouncedInputSearch(e.target.value)}
         />
       </div>
